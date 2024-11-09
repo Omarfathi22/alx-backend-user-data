@@ -16,10 +16,12 @@ patterns = {
 # Fields considered personally identifiable information (PII)
 PII_FIELDS = ("name", "email", "phone", "ssn", "password")
 
+
 def filter_datum(fields: List[str], redaction: str, message: str, separator: str) -> str:
     """Replaces field values in a message with a redaction string."""
     extract, replace = patterns["extract"], patterns["replace"]
     return re.sub(extract(fields, separator), replace(redaction), message)
+
 
 def get_logger() -> logging.Logger:
     """Creates and configures a logger to filter sensitive user data."""
@@ -30,6 +32,7 @@ def get_logger() -> logging.Logger:
     logger.propagate = False
     logger.addHandler(stream_handler)
     return logger
+
 
 def get_db() -> mysql.connector.connection.MySQLConnection:
     """Connects to a MySQL database using environment variables."""
@@ -45,6 +48,7 @@ def get_db() -> mysql.connector.connection.MySQLConnection:
         database=db_name,
     )
 
+
 def main():
     """Logs user data records from the database with sensitive fields redacted."""
     fields = "name,email,phone,ssn,password,ip,last_login,user_agent"
@@ -52,6 +56,7 @@ def main():
     query = f"SELECT {fields} FROM users;"
     info_logger = get_logger()
     connection = get_db()
+
     with connection.cursor() as cursor:
         cursor.execute(query)
         rows = cursor.fetchall()
@@ -62,9 +67,10 @@ def main():
             log_record = logging.LogRecord(*args)
             info_logger.handle(log_record)
 
+
 class RedactingFormatter(logging.Formatter):
     """Formatter that redacts specified fields in log messages."""
-    
+
     REDACTION = "***"
     FORMAT = "[HOLBERTON] %(name)s %(levelname)s %(asctime)-15s: %(message)s"
     SEPARATOR = ";"
@@ -77,6 +83,7 @@ class RedactingFormatter(logging.Formatter):
         """Formats the log record, replacing sensitive fields with redaction text."""
         msg = super(RedactingFormatter, self).format(record)
         return filter_datum(self.fields, self.REDACTION, msg, self.SEPARATOR)
+
 
 if __name__ == "__main__":
     main()
