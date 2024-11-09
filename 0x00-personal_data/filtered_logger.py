@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""A module for filtering logs.
+"""a module for filtering logs.
 """
 import os
 import re
@@ -24,7 +24,7 @@ def filter_datum(
 
 
 def get_logger() -> logging.Logger:
-    """Creates a new logger for user data.
+    """creates a new logger for user data.
     """
     logger = logging.getLogger("user_data")
     stream_handler = logging.StreamHandler()
@@ -39,7 +39,7 @@ def get_logger() -> logging.Logger:
 
 
 def get_db() -> mysql.connector.connection.MySQLConnection:
-    """Creates a connector to a database.
+    """creates a connector to a database.
     """
     db_host = os.getenv("PERSONAL_DATA_DB_HOST", "localhost")
     db_name = os.getenv("PERSONAL_DATA_DB_NAME", "")
@@ -78,7 +78,7 @@ def main():
 
 
 class RedactingFormatter(logging.Formatter):
-    """ Redacting Formatter class
+    """ redacting formatter class
     """
 
     REDACTION = "***"
